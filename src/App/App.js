@@ -1,9 +1,12 @@
 import React from 'react';
+import { Switch, Route, BrowserRouter as Router } from 'react-router-dom';
+import { createMuiTheme, CssBaseline, makeStyles, ThemeProvider } from '@material-ui/core';
+
 import './App.css';
 import SideMenu from '../components/SideMenu'
-import { createMuiTheme, CssBaseline, makeStyles, ThemeProvider } from '@material-ui/core';
 import Header from '../components/Header';
 import Employees from '../pages/Employees/Employees';
+import Groups from '../pages/Groups/Groups';
 
 const theme = createMuiTheme({
   palette:{
@@ -35,7 +38,7 @@ const theme = createMuiTheme({
 
 const useStyles = makeStyles({
   appMain: {
-    paddingLeft: '320px',
+    paddingLeft: '200px',
     width: '100%'
   }
 });
@@ -43,14 +46,28 @@ const useStyles = makeStyles({
 function App() {
   const classes = useStyles();
   return (
+    <Router>
     <ThemeProvider theme={theme}>
       <SideMenu />
       <div className={classes.appMain}>
         <Header />
-        <Employees />
+        
+        <Switch>
+          <Route path="/employees">
+            <Employees />
+          </Route>
+          <Route path="/groups">
+            <Groups />
+          </Route>
+          <Route path="/">
+            <div></div>
+          </Route>
+        </Switch>
+
       </div>
       <CssBaseline />
     </ThemeProvider>
+    </Router>
   );
 }
 
