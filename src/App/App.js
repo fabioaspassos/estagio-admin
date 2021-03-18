@@ -6,7 +6,35 @@ import './App.css';
 import SideMenu from '../components/SideMenu'
 import Header from '../components/Header';
 import Employees from '../pages/Employees/Employees';
-import Groups from '../pages/Groups/Groups';
+import Estagio from '../pages/Estagio/Estagio';
+
+export default function App() {
+  const styles = useStyles();
+  return (
+    <Router>
+    <ThemeProvider theme={theme}>
+      <SideMenu />
+      <div className={styles.appMain}>
+        <Header />
+        
+        <Switch>
+          <Route path="/employees">
+            <Employees />
+          </Route>
+          <Route path="/estagio">
+            <Estagio />
+          </Route>
+          <Route path="/">
+            <div></div>
+          </Route>
+        </Switch>
+
+      </div>
+      <CssBaseline />
+    </ThemeProvider>
+    </Router>
+  );
+}
 
 const theme = createMuiTheme({
   palette:{
@@ -42,33 +70,3 @@ const useStyles = makeStyles({
     width: '100%'
   }
 });
-
-function App() {
-  const classes = useStyles();
-  return (
-    <Router>
-    <ThemeProvider theme={theme}>
-      <SideMenu />
-      <div className={classes.appMain}>
-        <Header />
-        
-        <Switch>
-          <Route path="/employees">
-            <Employees />
-          </Route>
-          <Route path="/groups">
-            <Groups />
-          </Route>
-          <Route path="/">
-            <div></div>
-          </Route>
-        </Switch>
-
-      </div>
-      <CssBaseline />
-    </ThemeProvider>
-    </Router>
-  );
-}
-
-export default App;

@@ -4,16 +4,16 @@ import ViewListIcon from '@material-ui/icons/ViewList';
 
 import PageHeader from '../../components/PageHeader';
 
-export default function Groups() {
-    const classes = useStyles();
+export default function Estagio() {
+    const styles = useStyles();
 
     return (
         <>
             <PageHeader 
-                title='Novo Grupo'
-                subTitle='Form design with validations'
+                title='Escala de Estagios'
+                subTitle='Lista dos Grupos de Estagios' 
                 icon={ <ViewListIcon fontSize='large'/> } />
-            <Paper className={classes.pageContent}>
+            <Paper className={styles.pageContent}>
                 <div></div>
             </Paper>
         </>
