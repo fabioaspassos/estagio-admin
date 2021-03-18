@@ -43,12 +43,12 @@ export const getAllEscalas = () =>(
             grupos: [
                 {
                     id: '1',
-                    id_disciplina: '1',
-                    disciplina: 'Introducao',
+                    id_disciplina: '3',
+                    disciplina: 'Curso Enfermagem',
                     id_preceptor: '1',
                     preceptor: 'Zenilson',
-                    id_local: '1',
-                    local: 'PROCAPE',
+                    id_local: '4',
+                    local: 'SANTOS',
                     setor: 'HLP',
                     dataInicio: '2021-03-15',
                     dataFim: '2021-03-20',
@@ -56,12 +56,57 @@ export const getAllEscalas = () =>(
                 },
                 {
                     id: '2',
+                    id_disciplina: '4',
+                    disciplina: 'Clinica odontologica',
+                    id_preceptor: '1',
+                    preceptor: 'Jose',
+                    id_local: '3',
+                    local: 'Palmeira',
+                    setor: 'HLP',
+                    dataInicio: '2021-03-15',
+                    dataFim: '2021-03-20',
+                    turno:'MANHA'
+                }, 
+                {
+                    id: '7',
                     id_disciplina: '2',
-                    disciplina: 'Clinica Medica',
+                    disciplina: 'Clinica Fisio',
                     id_preceptor: '1',
                     preceptor: 'Jose',
                     id_local: '1',
-                    local: 'Madalena',
+                    local: 'Rio de Janeiro',
+                    setor: 'HLP',
+                    dataInicio: '2021-03-15',
+                    dataFim: '2021-03-20',
+                    turno:'MANHA'
+                },                                  
+            ]
+        },
+        {
+            id:'3', 
+            descricao:'1829-A-B',
+            grupos: [
+                {
+                    id: '5',
+                    id_disciplina: '1',
+                    disciplina: 'Intro',
+                    id_preceptor: '1',
+                    preceptor: 'Zenilson',
+                    id_local: '1',
+                    local: 'Sao Paulo',
+                    setor: 'HLP',
+                    dataInicio: '2021-03-15',
+                    dataFim: '2021-03-20',
+                    turno:'NOITE'
+                },
+                {
+                    id: '7',
+                    id_disciplina: '2',
+                    disciplina: 'Clinica Fisio',
+                    id_preceptor: '1',
+                    preceptor: 'Jose',
+                    id_local: '1',
+                    local: 'Rio de Janeiro',
                     setor: 'HLP',
                     dataInicio: '2021-03-15',
                     dataFim: '2021-03-20',
@@ -69,6 +114,5 @@ export const getAllEscalas = () =>(
                 },                                
             ]
         },
-
     ]
 );
