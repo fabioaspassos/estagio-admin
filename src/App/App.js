@@ -8,27 +8,33 @@ import SideMenu from '../components/SideMenu'
 import Header from '../components/Header';
 import Employees from '../pages/Employees/Employees';
 import Estagio from '../pages/Estagio/Estagio';
+import Login from '../pages/Login/Login';
+
+export function Routes() {
+  return (
+    <Switch>
+      <Route path="/" exact ><div></div></Route>
+      <Route path="/employees" component={Employees} isPrivate />
+      <Route path="/estagio" component={Estagio} />
+      <Route path="/login" component={Login} />
+    </Switch>
+  );
+}
 
 export default function App() {
+  
   const styles = useStyles();
+
   return (
     <Router>
-    <ThemeProvider theme={theme}>
-      <SideMenu />
-      <div className={styles.appMain}>
-        <Header />
-        
-        <Switch>
-          <Route path="/employees" component={Employees} isPrivate />
-          <Route path="/estagio" component={Estagio} />
-          <Route path="/">
-            <div></div>
-          </Route>
-        </Switch>
-
-      </div>
-      <CssBaseline />
-    </ThemeProvider>
+      <ThemeProvider theme={theme}>
+        <SideMenu />
+        <div className={styles.appMain}>
+          <Header />
+          <Routes />
+        </div>
+        <CssBaseline />
+      </ThemeProvider>
     </Router>
   );
 }

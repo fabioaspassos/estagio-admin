@@ -3,7 +3,7 @@ const KEYS = {
     escalaId: 'escalaId'
 }
 
-export const getAllEscalas = () =>(
+export const getAllEscalas = () => (
     [
         {
             id:'1', 
