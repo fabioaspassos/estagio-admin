@@ -1,27 +1,17 @@
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import { makeStyles, Card, CardContent, Typography, Grid, IconButton, Button, Dialog, TextField, DialogActions, DialogContent } from '@material-ui/core';
-import { Route } from 'react-router-dom';
 import AddBoxIcon from '@material-ui/icons/AddBox';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import PageHeader from '../../components/PageHeader';
 import { getAllEscalas } from '../../services/escalaService';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 
-export function EstagioHeader() {
-    return (
-        <>
-        <PageHeader 
-                title='Escala de Estagios'
-                subTitle='Lista dos Grupos de Estagios' 
-                icon={ <ViewListIcon fontSize='large'/> } />
-        </>
-    );
-}
-
 export default function Estagio() {
+    let history = useHistory();
     const [open, setOpen] = React.useState(false);
     const styles = useStyles();
-    let grupo;
+    let nomeNovoGrupo;
     let estagios = getAllEscalas();
 
     function abrirModal() {
@@ -32,14 +22,16 @@ export default function Estagio() {
         setOpen(false);
     }
 
-    function listarEstagio(estagio) {
-        console.log(estagio);
-        console.log(estagio.id);
+    function infoEstagio(estagio) {
+        history.push(`/estagio/${estagio.id}`, {estagio: estagio});
     }
    
     return (
         <>
-            <EstagioHeader />
+            <PageHeader 
+                title='Escala de Estagios'
+                subTitle='Lista dos Grupos de Estagios' 
+                icon={ <ViewListIcon fontSize='large'/> } />
             <Grid className={styles.pageContent}>
 
                 <Grid>
@@ -52,7 +44,7 @@ export default function Estagio() {
                                 autoFocus
                                 margin="dense"
                                 id="grupo"
-                                value={grupo}
+                                value={nomeNovoGrupo}
                                 label="Grupo"
                                 type="text"
                                 fullWidth
@@ -71,7 +63,7 @@ export default function Estagio() {
                             <CardContent>
                                 <Typography variant="h6">
                                     Grupo: {estagio.descricao}
-                                    <IconButton onClick={() => listarEstagio(estagio)}>
+                                    <IconButton onClick={() => infoEstagio(estagio)}>
                                         <ExitToAppIcon />
                                     </IconButton>
                                 </Typography>

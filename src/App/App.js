@@ -9,14 +9,16 @@ import Header from '../components/Header';
 import Employees from '../pages/Employees/Employees';
 import Estagio from '../pages/Estagio/Estagio';
 import Login from '../pages/Login/Login';
+import DetalheEstagio from '../pages/Estagio/DetalheEstagio';
 
 export function Routes() {
   return (
     <Switch>
-      <Route path="/" exact ><div></div></Route>
-      <Route path="/employees" component={Employees} isPrivate />
-      <Route path="/estagio" component={Estagio} />
-      <Route path="/login" component={Login} />
+      <Route exact path="/"><div></div></Route>
+      <Route exact path="/employees" component={Employees} isPrivate />
+      <Route exact path="/estagio" component={Estagio} />
+      <Route exact path="/estagio/:id" render={(props) => <DetalheEstagio {...props} />}/>
+      <Route exact path="/login" component={Login} />
     </Switch>
   );
 }
