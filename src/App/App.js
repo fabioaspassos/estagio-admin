@@ -1,6 +1,7 @@
 import React from 'react';
-import { Switch, Route, BrowserRouter as Router } from 'react-router-dom';
+import { Switch, BrowserRouter as Router } from 'react-router-dom';
 import { createMuiTheme, CssBaseline, makeStyles, ThemeProvider } from '@material-ui/core';
+import Route from "../components/RouteWrapper";
 
 import './App.css';
 import SideMenu from '../components/SideMenu'
@@ -18,12 +19,8 @@ export default function App() {
         <Header />
         
         <Switch>
-          <Route path="/employees">
-            <Employees />
-          </Route>
-          <Route path="/estagio">
-            <Estagio />
-          </Route>
+          <Route path="/employees" component={Employees} isPrivate />
+          <Route path="/estagio" component={Estagio} />
           <Route path="/">
             <div></div>
           </Route>
