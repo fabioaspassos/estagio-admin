@@ -4,15 +4,16 @@ import { makeStyles, Card, CardContent, Typography, Grid, IconButton, Button, Di
 import AddBoxIcon from '@material-ui/icons/AddBox';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import PageHeader from '../../components/PageHeader';
-import { getAllEscalas } from '../../services/escalaService';
+import { getAllEscalas, insertEscala } from '../../services/escalaService';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 
 export default function Estagio() {
-    let history = useHistory();
-    const [open, setOpen] = React.useState(false);
     const styles = useStyles();
-    let nomeNovoGrupo;
-    let estagios = getAllEscalas();
+    const [open, setOpen] = React.useState(false);
+    const [nomeGrupo, setNomeGrupo] = React.useState('');
+    const [estagios, setEstagios] = React.useState(getAllEscalas());
+    
+    let history = useHistory();
 
     function abrirModal() {
         setOpen(true);
@@ -20,6 +21,12 @@ export default function Estagio() {
 
     function fecharModal() {
         setOpen(false);
+    }
+
+    function novoGrupo() {
+        let newEstagios = insertEscala(nomeGrupo, estagios);
+        setEstagios(newEstagios);
+        fecharModal();
     }
 
     function infoEstagio(estagio) {
@@ -35,48 +42,53 @@ export default function Estagio() {
             <Grid className={styles.pageContent}>
 
                 <Grid>
-                    <IconButton onClick={abrirModal}>
+                    <IconButton onClick={abrirModal} className={styles.addButton}>
                         <AddBoxIcon/>
                     </IconButton>
-                    <Dialog style={styles.dialogStyle} open={open} onClose={fecharModal} aria-labelledby="form-dialog-title">
+
+                    <Dialog open={open} onClose={fecharModal} aria-labelledby="alert-dialog-slide-title" aria-describedby="alert-dialog-slide-description">
                         <DialogContent>
-                            <TextField 
-                                autoFocus
-                                margin="dense"
-                                id="grupo"
-                                value={nomeNovoGrupo}
-                                label="Grupo"
-                                type="text"
-                                fullWidth
-                            />
+                            <form>
+                                <TextField 
+                                    autoFocus
+                                    margin="dense"
+                                    id="grupo"
+                                    label="Grupo"
+                                    type="text"
+                                    fullWidth
+                                    onChange={event => setNomeGrupo(event.target.value)}
+                                />
+                            </form>
                         </DialogContent>
                         <DialogActions>
                             <Button onClick={fecharModal} color="primary">Cancelar</Button>
-                            <Button onClick={fecharModal} color="primary">Registrar</Button>
+                            <Button onClick={novoGrupo} color="primary">Registrar</Button>
                         </DialogActions>
                     </Dialog>
                 </Grid>
 
-                <Grid>
+                <Grid container spacing={2}>
                     {estagios.map((estagio) => (
-                        <Card>
-                            <CardContent>
-                                <Typography variant="h6">
-                                    Grupo: {estagio.descricao}
-                                    <IconButton onClick={() => infoEstagio(estagio)}>
-                                        <ExitToAppIcon />
-                                    </IconButton>
-                                </Typography>
-                                {estagio.grupos.map((grupo) => (
-                                    <Typography>
-                                        {grupo.disciplina} entre {grupo.dataInicio} a {grupo.dataFim} - {grupo.local}
+                        <Grid item xs={11} key={estagio.id}>
+                            <Card>
+                                <CardContent>
+                                    <Typography variant="h5">
+                                        Grupo: {estagio.descricao}
+                                        <IconButton onClick={() => infoEstagio(estagio)} className={styles.detailsButton}>
+                                            <ExitToAppIcon />
+                                        </IconButton>
                                     </Typography>
-                                ))}
-                            </CardContent>
-                        </Card>
+                                    <br />
+                                    {estagio.grupos && estagio.grupos.map((grupo) => (
+                                        <Typography key={grupo.id}>
+                                            {grupo.disciplina} entre {grupo.dataInicio} a {grupo.dataFim} - {grupo.local}
+                                        </Typography>
+                                    ))}
+                                </CardContent>
+                            </Card>
+                        </Grid>
                     ))}
                 </Grid>
-
             </Grid>
         </>
     )
@@ -86,5 +98,15 @@ const useStyles = makeStyles(theme => ({
     pageContent:{
         margin: theme.spacing(5),
         padding: theme.spacing(3)
+    },
+    addButton: {
+        padding: theme.spacing(0, 2),
+        float: 'right',
+        transform: 'scale(2.5)'
+    },
+    detailsButton: {
+        padding: theme.spacing(0, 2),
+        float: 'right',
+        transform: 'scale(1.5)'
     },
 }))

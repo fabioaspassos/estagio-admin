@@ -3,8 +3,20 @@ const KEYS = {
     escalaId: 'escalaId'
 }
 
-export const getAllEscalas = () => (
-    [
+export function insertEscala(nomeEscala, lista) {
+    let novalista = lista.slice();
+    const id = novalista[novalista.length - 1].id + 1;
+
+    let escala = {
+        id: id,
+        descricao: nomeEscala
+    };
+
+    return novalista.concat(escala);
+}
+
+export function getAllEscalas() {
+    return [
         {
             id:'1', 
             descricao:'1823-M-B',
@@ -20,7 +32,33 @@ export const getAllEscalas = () => (
                     setor: 'HLP',
                     dataInicio: '2021-03-15',
                     dataFim: '2021-03-20',
-                    turno:'NOITE'
+                    turno:'NOITE',
+                    alunos: [
+                        {
+                            matricula: '11111',
+                            nome: 'Maria Antonio' 
+                        },
+                        {
+                            matricula: '22222',
+                            nome: 'Antonio Maria' 
+                        },
+                        {
+                            matricula: '33333',
+                            nome: 'Ricky James' 
+                        },
+                        {
+                            matricula: '44444',
+                            nome: 'James Ricky' 
+                        },
+                        {
+                            matricula: '55555',
+                            nome: 'Marta Makens' 
+                        },
+                        {
+                            matricula: '66666',
+                            nome: 'Makens Marta' 
+                        },
+                    ]
                 },
                 {
                     id: '2',
@@ -33,7 +71,33 @@ export const getAllEscalas = () => (
                     setor: 'HLP',
                     dataInicio: '2021-03-15',
                     dataFim: '2021-03-20',
-                    turno:'MANHA'
+                    turno:'MANHA',
+                    alunos: [
+                        {
+                            matricula: '234324',
+                            nome: 'Maria Antonio' 
+                        },
+                        {
+                            matricula: '153452',
+                            nome: 'Antonio Maria' 
+                        },
+                        {
+                            matricula: '562656',
+                            nome: 'Ricky James' 
+                        },
+                        {
+                            matricula: '52464',
+                            nome: 'James Ricky' 
+                        },
+                        {
+                            matricula: '45678',
+                            nome: 'Marta Makens' 
+                        },
+                        {
+                            matricula: '1246',
+                            nome: 'Makens Marta' 
+                        },
+                    ]
                 },                                
             ]
         },
@@ -115,4 +179,4 @@ export const getAllEscalas = () => (
             ]
         },
     ]
-);
+};
