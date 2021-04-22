@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { makeStyles, Card, CardContent, Typography, Grid, IconButton, Button, Dialog, TextField, DialogActions, DialogContent } from '@material-ui/core';
 import AddBoxIcon from '@material-ui/icons/AddBox';
@@ -7,12 +7,17 @@ import PageHeader from '../../components/PageHeader';
 import { getAllEscalas, insertEscala } from '../../services/escalaService';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 
+const initialEscala = [{id:'1', nome:''}, {id:'2', nome:''}];
 export default function Estagio() {
     const styles = useStyles();
     const [open, setOpen] = React.useState(false);
     const [nomeGrupo, setNomeGrupo] = React.useState('');
-    const [estagios, setEstagios] = React.useState(getAllEscalas());
+    const [estagios, setEstagios] = React.useState(initialEscala);
     
+    useEffect(() => {
+        getAllEscalas().then(data => setEstagios(data));
+    });
+
     let history = useHistory();
 
     function abrirModal() {
@@ -73,7 +78,7 @@ export default function Estagio() {
                             <Card>
                                 <CardContent>
                                     <Typography variant="h5">
-                                        Grupo: {estagio.descricao}
+                                        Grupo: {estagio.nome}
                                         <IconButton onClick={() => infoEstagio(estagio)} className={styles.detailsButton}>
                                             <ExitToAppIcon />
                                         </IconButton>
@@ -81,7 +86,7 @@ export default function Estagio() {
                                     <br />
                                     {estagio.grupos && estagio.grupos.map((grupo) => (
                                         <Typography key={grupo.id}>
-                                            {grupo.disciplina} entre {grupo.dataInicio} a {grupo.dataFim} - {grupo.local}
+                                            {grupo.disciplina?.descricao} entre {grupo.dataInicio} a {grupo.dataFim} - {grupo.campoEstagio?.nome}
                                         </Typography>
                                     ))}
                                 </CardContent>
