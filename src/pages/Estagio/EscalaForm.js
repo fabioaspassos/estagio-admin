@@ -6,7 +6,7 @@ import {useForm, Form} from '../../components/useForm';
 
 const initialValues = {
     id: 0,
-    descricao: ''
+    nome: ''
 }
 
 export default function EscalaForm(props) {
@@ -14,8 +14,8 @@ export default function EscalaForm(props) {
 
     const validate = (fieldsValues = values ) => {
         let temp = {...errors};
-        if ('descricao' in fieldsValues)
-            temp.descricao = fieldsValues.descricao ? '' : 'Campo obrigatorio.';
+        if ('nome' in fieldsValues)
+            temp.nome = fieldsValues.nome ? '' : 'Campo obrigatorio.';
         
         setErrors({ ...temp});
 
@@ -51,11 +51,11 @@ export default function EscalaForm(props) {
             <Grid container>
                 <Grid item xs={6}>
                     <Controls.Input
-                        label='Descricao'
-                        name='descricao'
-                        value={values.descricao}
+                        label='Nome da Escala'
+                        name='nome'
+                        value={values.nome}
                         onChange={handleInputChange}
-                        error={errors.descricao}
+                        error={errors.nome}
                     />
                 </Grid>
                 <Grid item xs={6}>

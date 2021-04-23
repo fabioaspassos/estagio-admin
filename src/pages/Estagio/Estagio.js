@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import {
     makeStyles,
@@ -18,12 +18,14 @@ import Popup from "../../components/Popup";
 import { getAllEscalas, insertEscala } from '../../services/escalaService';
 import EscalaForm from './EscalaForm';
 
+const initialEscala = [{id:'1', nome:''}, {id:'2', nome:''}];
+const escala2 = [{id:'1', nome:'Teste1'}, {id:'2', nome:'Teste2'}];
 export default function Estagio() {
     const styles = useStyles();
 
     const [recordForEdit, setRecordForEdit] = useState(null);
     const [openPopup, setOpenPopup] = useState(false);
-    const [records, setRecords] = useState(getAllEscalas())
+    const [records, setRecords] = useState(initialEscala);
 
     let history = useHistory();
 
@@ -31,24 +33,27 @@ export default function Estagio() {
         history.push(`/estagio/${estagio.id}`, { estagio: estagio });
     }
 
-    const addOrEdit = (estagio, resetForm) => {
-        let escalas = null;
-        if (estagio.id === 0){
-            console.log("Insert " +  JSON.stringify(estagio));
-            escalas = insertEscala(estagio, records);
+    const addOrEdit = async (estagio, resetForm) => {
+        let result = null;
+        if (estagio.id === 0){            
+            result = await insertEscala(estagio);            
         } else {
             console.log("Update " + estagio);
         }
         resetForm();
         setRecordForEdit(null);
         setOpenPopup(false);         
-        setRecords(escalas);
+        getAllEscalas().then( data => setRecords(data));
     }
 
     const openInPopup = item => {
         setRecordForEdit(item)
         setOpenPopup(true)
     }
+
+    useEffect( () => {
+        getAllEscalas().then( data => setRecords(data));
+      }, [setRecords]); 
 
     return (
         <>
@@ -69,12 +74,12 @@ export default function Estagio() {
 
             <Grid className={styles.pageContent}>
                 <Grid container spacing={2}>
-                    {records.map((estagio) => (
+                    {records?.map((estagio) => (
                         <Grid item xs={11} key={estagio.id}>
                             <Card>
                                 <CardContent>
                                     <Typography variant="h5">
-                                        Grupo: {estagio.descricao}
+                                        Grupo: {estagio.nome}
                                         <IconButton onClick={() => infoEstagio(estagio)} className={styles.detailsButton}>
                                             <ExitToAppIcon />
                                         </IconButton>
@@ -82,7 +87,7 @@ export default function Estagio() {
                                     <br />
                                     {estagio.grupos && estagio.grupos.map((grupo) => (
                                         <Typography key={grupo.id}>
-                                            {grupo.disciplina} entre {grupo.dataInicio} a {grupo.dataFim} - {grupo.local}
+                                            {grupo.disciplina?.descricao} entre {grupo.dataInicio} a {grupo.dataFim} - {grupo.campoEstagio?.nome}
                                         </Typography>
                                     ))}
                                 </CardContent>

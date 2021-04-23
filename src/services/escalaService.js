@@ -1,12 +1,18 @@
-export function insertEscala(newEscala, lista) {
-    let novalista = lista.slice();
-    newEscala.id = novalista[novalista.length - 1].id + 1;
+import axios from 'axios';
+import { server } from '../common';
 
-    return novalista.concat(newEscala);
+const insertEscala= async (newEscala) => {    
+    let res = await axios.post(`${server}/api/escala`, newEscala);
+    return res;
 }
 
-export function getAllEscalas() {
-    return [
+const getAllEscalas = async () => {
+    let res = await axios.get(`${server}/api/escala`);
+    return res.data;
+}
+export {getAllEscalas, insertEscala};
+
+const escalasmok = [
         {
             id:'1', 
             descricao:'1823-M-B',
@@ -168,5 +174,4 @@ export function getAllEscalas() {
                 },                                
             ]
         },
-    ]
-};
+    ];
