@@ -1,21 +1,9 @@
 import axios from 'axios';
 import { server } from '../common';
 
-const KEYS = {
-    escala: 'escala',
-    escalaId: 'escalaId'
-}
-
-const insertEscala= (nomeEscala, lista) => {
-    let novalista = lista.slice();
-    const id = novalista[novalista.length - 1].id + 1;
-
-    let escala = {
-        id: id,
-        descricao: nomeEscala
-    };
-
-    return novalista.concat(escala);
+const insertEscala= async (newEscala) => {    
+    let res = await axios.post(`${server}/api/escala`, newEscala);
+    return res;
 }
 
 const getAllEscalas = async () => {
