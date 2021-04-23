@@ -1,18 +1,8 @@
-const KEYS = {
-    escala: 'escala',
-    escalaId: 'escalaId'
-}
-
-export function insertEscala(nomeEscala, lista) {
+export function insertEscala(newEscala, lista) {
     let novalista = lista.slice();
-    const id = novalista[novalista.length - 1].id + 1;
+    newEscala.id = novalista[novalista.length - 1].id + 1;
 
-    let escala = {
-        id: id,
-        descricao: nomeEscala
-    };
-
-    return novalista.concat(escala);
+    return novalista.concat(newEscala);
 }
 
 export function getAllEscalas() {
