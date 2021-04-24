@@ -7,17 +7,17 @@ import './App.css';
 import SideMenu from '../components/SideMenu'
 import Header from '../components/Header';
 import Employees from '../pages/Employees/Employees';
-import Estagio from '../pages/Estagio/Estagio';
+import Estagio from '../pages/Estagio/estagio.index';
 import Login from '../pages/Login/Login';
-import DetalheEstagio from '../pages/Estagio/DetalheEstagio';
+import EscalaInfo from '../pages/Estagio/estagioInfo';
 
 export function Routes() {
   return (
     <Switch>
       <Route exact path="/"><div></div></Route>
-      <Route exact path="/employees" component={Employees} isPrivate />
+      <Route exact path="/employees" component={Employees} />
       <Route exact path="/estagio" component={Estagio} />
-      <Route exact path="/estagio/:id" render={(props) => <DetalheEstagio {...props} />}/>
+      <Route exact path="/estagio/:id" render={(props) => <EscalaInfo {...props} />}/>
       <Route exact path="/login" component={Login} />
     </Switch>
   );

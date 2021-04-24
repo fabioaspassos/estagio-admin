@@ -3,13 +3,12 @@ import { Grid } from '@material-ui/core';
 import Controls from '../../components/controls/Controls';
 import {useForm, Form} from '../../components/useForm';
 
-
 const initialValues = {
     id: 0,
     nome: ''
 }
 
-export default function EscalaForm(props) {
+export default function EstagioFormComponent(props) {
     const { addOrEdit, recordForEdit } = props;
 
     const validate = (fieldsValues = values ) => {
@@ -44,7 +43,7 @@ export default function EscalaForm(props) {
             setValues({
                 ...recordForEdit
             })
-    }, [recordForEdit])
+    }, [recordForEdit, setValues])
 
     return (
         <Form onSubmit={handleSubmit}>

@@ -11,7 +11,7 @@ export default function RouteWrapper({
     // TODO: Usar REDUX para alterar programaticamente o login
     const signed = false;
 
-    // Se a routa for privada e usuario nao logou
+    // Se a rota for privada e usuario nao logou
     if (isPrivate && !signed) {
         return <Redirect to='/login' />;
     }
