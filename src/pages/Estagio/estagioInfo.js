@@ -16,16 +16,23 @@ import {
     DialogContent, 
     TextField, 
     DialogActions,
-    Button
+    Button,
+    FormHelperText
 } from '@material-ui/core';
-import Controls from '../../components/controls/Controls';
-import {Form} from '../../components/useForm';
+import {
+    MuiPickersUtilsProvider,
+    KeyboardDatePicker
+} from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
+import {Controller, useForm} from 'react-hook-form';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import { getEscalaById } from '../../services/escalaService';
 
 export default function EstagioInfo(props) {
     const styles = useStyles();
     const state = props.location.state;
+    const { register, handleSubmit, reset, control, formState: { errors } } = useForm();
+
     const [estagio, setEstagio] = useState({});
     const [addModal, setAddModal] = useState(false);
     const [deleteModal, setDeleteModal] = useState(false);
@@ -64,6 +71,11 @@ export default function EstagioInfo(props) {
     const addStudent = (student) => {
         console.log(`Chamada para adicionar aluno: ${JSON.stringify(student)}`);
         closeAddModal();
+    }
+
+    const onSubmit = (data) => {
+        console.log(`Chamada para o formulario: ${JSON.stringify(data)}`);
+        reset();
     }
 
     useEffect(() => {
@@ -136,54 +148,113 @@ export default function EstagioInfo(props) {
         );
     }
 
+    // TODO: extract this form as another component
     const _renderModalForm = () => {
         return (
             <Dialog open={formModal} onClose={closeFormModal} aria-labelledby="form-dialog-title" fullWidth={true}>
                 <DialogTitle id="form-dialog-title">Adicionar Disciplina</DialogTitle>
-                <DialogContent>
-                    <Form>
-                        <Grid container>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    <DialogContent>
+                        <Grid container spacing={2}>
                             <Grid item xs={12}>
-                                <Controls.Input 
-                                    label='Disciplina'
-                                    name='disciplina'/>
-                            </Grid>
-                            <Grid item xs={12}>
-                                <Controls.Input
-                                    label='Preceptor'
-                                    name='preceptor'/>
-                            </Grid>
-                            <Grid item xs={12}>
-                                <Controls.Input
-                                    label='Local'
-                                    name='local'/>
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <Controls.DatePicker
-                                    name='Data Inicio'
-                                    label='dataInicio'/>
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <Controls.DatePicker
-                                    name='Data Fim'
-                                    label='dataFim'/>
+                                <TextField
+                                    {...register('disciplina')}
+                                    required
+                                    fullWidth
+                                    id="disciplina"
+                                    label="Disciplina"
+                                    name="disciplina"/>
                             </Grid>
                             <Grid item xs={12}>
-                                <Controls.Input
-                                    label='Turno'
-                                    name='turno' />
+                                <TextField
+                                    {...register('preceptor')}
+                                    required
+                                    fullWidth
+                                    id="preceptor"
+                                    label="Preceptor"
+                                    name="preceptor"/>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    {...register('local')}
+                                    required
+                                    fullWidth
+                                    id="local"
+                                    label="Local"
+                                    name="local"/>
+                            </Grid>
+                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <Grid item xs={12} sm={6}>
+                                    <Controller 
+                                        render={({
+                                            field: { onChange, value }
+                                          }) => (
+                                            <KeyboardDatePicker
+                                                fullWidth
+                                                disableToolbar
+                                                variant="inline"
+                                                format="dd/MM/yyyy"
+                                                margin="normal"
+                                                id="dataInicio"
+                                                label="Date Inicio"
+                                                value={value}
+                                                onChange={onChange}
+                                                KeyboardButtonProps={{
+                                                    'aria-label': 'change date',
+                                                }}/>
+                                        )}
+                                        control={control}
+                                        name="dataInicio"
+                                        rules={{required: true}}
+                                    />
+                                    {errors.dataInicio && <FormHelperText error>Campo Data Inicio é obrigatório!</FormHelperText>}
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <Controller 
+                                        render={({
+                                            field: { onChange, value }
+                                          }) => (
+                                            <KeyboardDatePicker
+                                                fullWidth
+                                                disableToolbar
+                                                variant="inline"
+                                                format="dd/MM/yyyy"
+                                                margin="normal"
+                                                id="dataFim"
+                                                label="Date Término"
+                                                value={value}
+                                                onChange={onChange}
+                                                KeyboardButtonProps={{
+                                                    'aria-label': 'change date',
+                                                }}/>
+                                        )}
+                                        control={control}
+                                        name="dataFim"
+                                        rules={{required: true}}
+                                    />
+                                    {errors.dataFim && <FormHelperText error>Campo Data Término é obrigatório!</FormHelperText>}
+                                </Grid>
+                            </MuiPickersUtilsProvider>
+                            <Grid item xs={12}>
+                                <TextField
+                                    {...register('turno')}
+                                    required
+                                    fullWidth
+                                    id="turno"
+                                    label="Turno"
+                                    name="turno"/>
                             </Grid>
                         </Grid>
-                    </Form>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={closeFormModal}>
-                        Cancelar
-                    </Button>
-                    <Button onClick={closeFormModal} variant="contained" color="primary">
-                        Confirmar
-                    </Button>
-                </DialogActions>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={closeFormModal}>
+                            Cancelar
+                        </Button>
+                        <Button type="submit" variant="contained" color="primary">
+                            Confirmar
+                        </Button>
+                    </DialogActions>
+                </form>
             </Dialog>
         );
     }
