@@ -2,7 +2,6 @@ import React from 'react';
 import { Switch, BrowserRouter as Router } from 'react-router-dom';
 import { createMuiTheme, CssBaseline, makeStyles, ThemeProvider } from '@material-ui/core';
 import Route from "../components/RouteWrapper";
-
 import './App.css';
 import SideMenu from '../components/SideMenu'
 import Header from '../components/Header';
@@ -37,7 +36,7 @@ export default function App() {
         </div>
         <CssBaseline />
       </ThemeProvider>
-    </Router>
+    </Router> 
   );
 }
 
