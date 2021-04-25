@@ -1,86 +1,92 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import {
-    makeStyles,
     Card,
     CardContent,
     Typography,
     Grid,
     IconButton,
-    Toolbar
+    Toolbar,
+    Dialog, 
+    DialogTitle, 
+    DialogContent, 
+    TextField, 
+    DialogActions,
+    Button
 } from '@material-ui/core';
+import { useStyles } from './estagio.styles';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import AddIcon from '@material-ui/icons/Add';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import Controls from "../../components/controls/Controls";
 import PageHeader from '../../components/PageHeader';
-import Popup from "../../components/Popup";
 import { getAllEscalas, insertEscala } from '../../services/escalaService';
-import EscalaForm from './EscalaForm';
 
-const initialEscala = [{id:'1', nome:''}, {id:'2', nome:''}];
-const escala2 = [{id:'1', nome:'Teste1'}, {id:'2', nome:'Teste2'}];
 export default function Estagio() {
     const styles = useStyles();
-
-    const [recordForEdit, setRecordForEdit] = useState(null);
-    const [openPopup, setOpenPopup] = useState(false);
-    const [records, setRecords] = useState(initialEscala);
-
     let history = useHistory();
+    const [modalStatus, setModalStatus] = useState(false);
+    const [records, setRecords] = useState([]);
+    const [newRecord, setNewRecord] = useState({
+        nome: ''
+    });
 
-    function infoEstagio(estagio) {
+    function navigateToInfoEstagio(estagio) {
         history.push(`/estagio/${estagio.id}`, { estagio: estagio });
     }
 
-    const addOrEdit = async (estagio, resetForm) => {
-        let result = null;
-        if (estagio.id === 0){            
-            result = await insertEscala(estagio);            
-        } else {
-            console.log("Update " + estagio);
-        }
-        resetForm();
-        setRecordForEdit(null);
-        setOpenPopup(false);         
+    const insertNewRecord = () => {
+        insertEscala(newRecord);
         getAllEscalas().then( data => setRecords(data));
+        closeModal();
     }
 
-    const openInPopup = item => {
-        setRecordForEdit(item)
-        setOpenPopup(true)
+    const openModal = () => {
+        setModalStatus(true);
     }
 
-    useEffect( () => {
-        getAllEscalas().then( data => setRecords(data));
-      }, [setRecords]); 
+    const closeModal = () => {
+        setModalStatus(false);
+    }
 
-    return (
-        <>
+    useEffect(() => {
+        getAllEscalas().then( data => setRecords(data));
+    }, [setRecords]); 
+
+    const _renderSectionHeader = () => {
+        return (
             <PageHeader
                 title='Escala de Estagios'
                 subTitle='Lista dos Grupos de Estagios'
                 icon={<ViewListIcon fontSize='large' />} />
+        );
+    }
 
+    const _renderToolbar = () => {
+        return (
             <Toolbar>
                 <Controls.Button
                     text="Add New"
                     variant="outlined"
                     startIcon={<AddIcon />}
                     className={styles.newButton}
-                    onClick={() => { setOpenPopup(true); setRecordForEdit(null); }}
+                    onClick={() => { openModal()}}
                 />
             </Toolbar>
+        );
+    }
 
+    const _renderSectionBody = () => {
+        return (
             <Grid className={styles.pageContent}>
                 <Grid container spacing={2}>
                     {records?.map((estagio) => (
                         <Grid item xs={11} key={estagio.id}>
-                            <Card>
+                            <Card className={styles.card}>
                                 <CardContent>
                                     <Typography variant="h5">
                                         Grupo: {estagio.nome}
-                                        <IconButton onClick={() => infoEstagio(estagio)} className={styles.detailsButton}>
+                                        <IconButton onClick={() => navigateToInfoEstagio(estagio)} className={styles.detailsButton}>
                                             <ExitToAppIcon />
                                         </IconButton>
                                     </Typography>
@@ -96,38 +102,41 @@ export default function Estagio() {
                     ))}
                 </Grid>
             </Grid>
-
-            <Popup
-                title="Escala Form"
-                openPopup={openPopup}
-                setOpenPopup={setOpenPopup}>
-                <EscalaForm
-                    recordForEdit={recordForEdit}
-                    addOrEdit={addOrEdit} />
-            </Popup>
-
-        </>
-    )
-}
-
-const useStyles = makeStyles(theme => ({
-    pageContent: {
-        margin: theme.spacing(5),
-        padding: theme.spacing(3)
-    },
-    addButton: {
-        padding: theme.spacing(0, 2),
-        float: 'right',
-        transform: 'scale(2.5)'
-    },
-    detailsButton: {
-        padding: theme.spacing(0, 2),
-        float: 'right',
-        transform: 'scale(1.5)'
-    },
-    newButton: {
-        position: 'absolute',
-        right: '10px'
+        );
     }
 
-}))
+    const _renderModal = () => {
+        return (
+            <Dialog open={modalStatus} onClose={openModal} aria-labelledby="form-dialog-title" fullWidth={true}>
+            <DialogTitle id="form-dialog-title">Formulário Escala</DialogTitle>
+            <DialogContent>
+              <TextField
+                autoFocus
+                margin="dense"
+                label="Nome da Escala"
+                type="text"
+                fullWidth
+                onChange={data => setNewRecord({nome: data.target.value})}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={closeModal}>
+                Cancelar
+              </Button>
+              <Button onClick={insertNewRecord} variant="contained" color="primary">
+                Confirmar
+              </Button>
+            </DialogActions>
+          </Dialog>
+        );
+    }
+
+    return (
+        <>
+            {_renderSectionHeader()}
+            {_renderToolbar()}
+            {_renderSectionBody()}
+            {_renderModal()}
+        </>
+    );
+}
