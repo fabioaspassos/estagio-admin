@@ -28,6 +28,9 @@ import {Controller, useForm} from 'react-hook-form';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import { getEscalaById } from '../../services/escalaService';
 
+import { addAluno, removeAluno, getAlunosOptionValues } from '../../services/grupoService';
+import AsyncSelect from 'react-select/async';
+
 export default function EstagioInfo(props) {
     const styles = useStyles();
     const state = props.location.state;
@@ -63,14 +66,18 @@ export default function EstagioInfo(props) {
         setDeleteModal(false);
     }    
 
-    const deleteStudent = (student) => {
+    const deleteStudent = async (student) => {
         console.log(`Chamada para deleter aluno: ${JSON.stringify(student)}`);
+        const res = await removeAluno(estagio.id, student);
         closeDeleteModal();
+        getEscalaById(estagio.id).then(data => setEstagio(data));
     }
 
-    const addStudent = (student) => {
+    const addStudent = async (student) => {
         console.log(`Chamada para adicionar aluno: ${JSON.stringify(student)}`);
-        closeAddModal();
+        const res = await addAluno(estagio.id, student);
+        closeAddModal();        
+        getEscalaById(estagio.id).then(data => setEstagio(data));
     }
 
     const onSubmit = (data) => {
@@ -84,6 +91,13 @@ export default function EstagioInfo(props) {
             setEstagio(data);
         })
     }, [state, setEstagio]);
+
+    const getOptionsAlunos = inputValue =>
+      new Promise(resolve => {
+        setTimeout(() => {
+          resolve(getAlunosOptionValues(inputValue));
+        }, 1000);
+      });
 
     const _renderSectionHeader = () => {
         return (
@@ -264,15 +278,17 @@ export default function EstagioInfo(props) {
             <Dialog open={addModal} onClose={closeAddModal} aria-labelledby="form-dialog-title" fullWidth={true}>
                 <DialogTitle id="form-dialog-title">Adicionar Aluno</DialogTitle>
                 <DialogContent>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="name"
-                        label="Matrícula ou Nome"
-                        type="text"
-                        fullWidth
-                        onChange={data => setStudent({name: data.target.value})}
+
+                    <AsyncSelect 
+                        isClearable
+                        loadOptions={getOptionsAlunos}                         
+                        onChange={ option => {                                 
+                                const aluno = {id: option?.value, nome: option?.label};
+                                setStudent(aluno);
+                            }
+                        }
                     />
+
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={closeAddModal}>
