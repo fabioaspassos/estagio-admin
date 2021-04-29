@@ -37,4 +37,7 @@ export const useStyles = makeStyles(theme => ({
         textAlign: 'center',
         color: theme.palette.text.secondary,
       },
+    autocompleteStudent: {
+        paddingBottom: theme.spacing(20)
+    }
 }));
