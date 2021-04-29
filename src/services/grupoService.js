@@ -5,7 +5,7 @@ const base_url = `${server}/api/grupo`;
 
 const getAlunosOptionValues = async inputValue => {
     if (inputValue?.length < 4) return null;
-    const resp = await axios.get(`${server}/api/aluno/startingWith/${inputValue}`);
+    const resp = await axios.get(`${server}/api/aluno/startingWith/${inputValue}?size=4&sort=nome`);
     const alunos = resp.data;
     let options = alunos.map(aluno => ( {label: aluno.nome, value: aluno.id} ));
     return options;

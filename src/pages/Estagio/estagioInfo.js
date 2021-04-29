@@ -277,18 +277,16 @@ export default function EstagioInfo(props) {
         return (
             <Dialog open={addModal} onClose={closeAddModal} aria-labelledby="form-dialog-title" fullWidth={true}>
                 <DialogTitle id="form-dialog-title">Adicionar Aluno</DialogTitle>
-                <DialogContent>
-
-                    <AsyncSelect 
-                        isClearable
-                        loadOptions={getOptionsAlunos}                         
-                        onChange={ option => {                                 
-                                const aluno = {id: option?.value, nome: option?.label};
-                                setStudent(aluno);
+                <DialogContent className={styles.autocompleteStudent}>
+                        <AsyncSelect
+                            isClearable 
+                            loadOptions={getOptionsAlunos}                         
+                            onChange={ option => {                                 
+                                    const aluno = {id: option?.value, nome: option?.label};
+                                    setStudent(aluno);
+                                }
                             }
-                        }
-                    />
-
+                        />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={closeAddModal}>
