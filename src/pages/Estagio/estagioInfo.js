@@ -3,18 +3,19 @@ import ViewListIcon from '@material-ui/icons/ViewList';
 import PageHeader from '../../components/PageHeader';
 import { useStyles } from './estagio.styles';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
-import { 
-    Paper, 
-    Grid, 
-    Card, 
-    CardContent, 
-    CardActions, 
-    Typography, 
-    IconButton, 
-    Dialog, 
-    DialogTitle, 
-    DialogContent, 
-    TextField, 
+import FileCopyIcon from '@material-ui/icons/FileCopy';
+import {
+    Paper,
+    Grid,
+    Card,
+    CardContent,
+    CardActions,
+    Typography,
+    IconButton,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    TextField,
     DialogActions,
     Button,
     FormHelperText
@@ -24,23 +25,27 @@ import {
     KeyboardDatePicker
 } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
-import {Controller, useForm} from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import { getEscalaById } from '../../services/escalaService';
-
-import { addAluno, removeAluno, getAlunosOptionValues } from '../../services/grupoService';
+import { addAluno, removeAluno, getAlunosOptionValues, copyGrupo } from '../../services/grupoService';
 import AsyncSelect from 'react-select/async';
+import Notification from "../../components/Notification";
+import ConfirmDialog from "../../components/ConfirmDialog";
 
+const initialModalGrupo = { open: false, currentGrupo: null };
 export default function EstagioInfo(props) {
     const styles = useStyles();
     const state = props.location.state;
     const { register, handleSubmit, reset, control, formState: { errors } } = useForm();
 
     const [estagio, setEstagio] = useState({});
-    const [addModal, setAddModal] = useState(false);
-    const [deleteModal, setDeleteModal] = useState(false);
+    const [addModal, setAddModal] = useState(initialModalGrupo);
+    const [deleteModal, setDeleteModal] = useState(initialModalGrupo);
     const [formModal, setFormModal] = useState(false);
     const [student, setStudent] = useState(null);
+    const [notify, setNotify] = useState({ isOpen: false, message: '', type: '' })
+    const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, title: '', subTitle: '' })
 
     const openFormModal = () => {
         setFormModal(true);
@@ -50,33 +55,80 @@ export default function EstagioInfo(props) {
         setFormModal(false);
     }
 
-    const openAddModal = () => {
-        setAddModal(true);
+    const openAddModal = (grupo) => {
+        setAddModal({ open: true, currentGrupo: grupo });
     }
 
     const closeAddModal = () => {
-        setAddModal(false);
+        setAddModal(initialModalGrupo);
     }
 
-    const openDeleteModal = () => {
-        setDeleteModal(true);
+    const openDeleteModal = (grupo) => {
+        console.log(`>openDeleteModal : ${grupo.id}`);
+        setDeleteModal({ open: true, currentGrupo: grupo });
     }
 
     const closeDeleteModal = () => {
-        setDeleteModal(false);
-    }    
+        setDeleteModal(initialModalGrupo);
+    }
 
-    const deleteStudent = async (student) => {
-        console.log(`Chamada para deleter aluno: ${JSON.stringify(student)}`);
-        const res = await removeAluno(estagio.id, student);
+    const cloneGrupo = async (grupo) => {
+        console.log(`>cloneGrupo grupo: ${grupo.id}`);
+        setConfirmDialog({
+            ...confirmDialog,
+            isOpen: false
+        })
+        const res = await copyGrupo(
+            grupo,
+            res => setNotify({
+                isOpen: true,
+                message: 'Grupo copiado.',
+                type: 'success'
+            }),
+            err => setNotify({
+                isOpen: true,
+                message: 'Erro ao copiar o grupo',
+                type: 'error'
+            })
+        );
+        getEscalaById(estagio.id).then(data => setEstagio(data));
+    }
+
+    const deleteStudent = async (grupo, student) => {
+        console.log(`>deleteStudent grupo: ${grupo.id} aluno: ${JSON.stringify(student)}`);
+        await removeAluno(
+            grupo.id, student, 
+            res => setNotify({
+                isOpen: true,
+                message: 'Aluno Removido.',
+                type: 'success'
+            }),
+            err => setNotify({
+                isOpen: true,
+                message: 'Erro ao remover aluno do grupo',
+                type: 'error'
+            })
+        );
         closeDeleteModal();
         getEscalaById(estagio.id).then(data => setEstagio(data));
     }
 
-    const addStudent = async (student) => {
-        console.log(`Chamada para adicionar aluno: ${JSON.stringify(student)}`);
-        const res = await addAluno(estagio.id, student);
-        closeAddModal();        
+    const addStudent = async (grupo, student) => {
+        console.log(`Chamada para adicionar grupo:${grupo.id} e aluno: ${JSON.stringify(student)}`);
+        await addAluno(
+            grupo.id, student,
+            res => setNotify({
+                isOpen: true,
+                message: 'Aluno Adcionado.',
+                type: 'success'
+            }),
+            err => setNotify({
+                isOpen: true,
+                message: 'Erro ao adcionar aluno no grupo',
+                type: 'error'
+            })
+        );
+        closeAddModal();
         getEscalaById(estagio.id).then(data => setEstagio(data));
     }
 
@@ -93,18 +145,18 @@ export default function EstagioInfo(props) {
     }, [state, setEstagio]);
 
     const getOptionsAlunos = inputValue =>
-      new Promise(resolve => {
-        setTimeout(() => {
-          resolve(getAlunosOptionValues(inputValue));
-        }, 1000);
-      });
+        new Promise(resolve => {
+            setTimeout(() => {
+                resolve(getAlunosOptionValues(inputValue));
+            }, 1000);
+        });
 
     const _renderSectionHeader = () => {
         return (
-            <PageHeader 
+            <PageHeader
                 title='Escala de Estagios'
-                subTitle='Lista dos Grupos de Estagios' 
-                icon={ <ViewListIcon fontSize='large'/> } />
+                subTitle='Lista dos Grupos de Estagios'
+                icon={<ViewListIcon fontSize='large' />} />
         );
     }
 
@@ -118,7 +170,7 @@ export default function EstagioInfo(props) {
                             <AddCircleIcon />
                         </IconButton>
                     </Typography>
-                </Paper> 
+                </Paper>
             </Grid>
         );
     }
@@ -131,7 +183,7 @@ export default function EstagioInfo(props) {
                         <Card>
                             <CardContent>
                                 <Typography variant="h6">
-                                    {grupo.disciplina.descricao}
+                                    {grupo.nome}
                                 </Typography>
                                 <Typography>
                                     {grupo.dataInicio} a {grupo.dataFim}
@@ -141,18 +193,29 @@ export default function EstagioInfo(props) {
                                 </Typography>
                                 <hr />
                                 {grupo.alunos && grupo.alunos.map((aluno) => (
-                                    <Typography value={aluno} key={aluno.id} 
+                                    <Typography value={aluno} key={aluno.id}
                                         onClick={() => {
-                                            setStudent({id: aluno.id, name: aluno.nome}); 
-                                            openDeleteModal();
+                                            setStudent({ id: aluno.id, name: aluno.nome });
+                                            openDeleteModal(grupo);
                                         }}>
                                         {aluno.id} - {aluno.nome}
                                     </Typography>
                                 ))}
                             </CardContent>
                             <CardActions>
-                                <IconButton edge="start" className={styles.addButtonInfo} onClick={openAddModal}>
-                                    <PersonAddIcon/>
+                                <IconButton edge="start" className={styles.addButtonInfo} onClick={
+                                    () => {
+                                        setConfirmDialog({
+                                            isOpen: true,
+                                            title: 'Tem certeza que deseja duplicar este Grupo ?',
+                                            subTitle: "",
+                                            onConfirm: () => { cloneGrupo(grupo) }
+                                        })
+                                    }}>
+                                    <FileCopyIcon />
+                                </IconButton>
+                                <IconButton edge="start" className={styles.addButtonInfo} onClick={() => openAddModal(grupo)}>
+                                    <PersonAddIcon />
                                 </IconButton>
                             </CardActions>
                         </Card>
@@ -166,7 +229,7 @@ export default function EstagioInfo(props) {
     const _renderModalForm = () => {
         return (
             <Dialog open={formModal} onClose={closeFormModal} aria-labelledby="form-dialog-title" fullWidth={true}>
-                <DialogTitle id="form-dialog-title">Adicionar Disciplina</DialogTitle>
+                <DialogTitle id="form-dialog-title">Novo Grupo</DialogTitle>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <DialogContent>
                         <Grid container spacing={2}>
@@ -177,7 +240,7 @@ export default function EstagioInfo(props) {
                                     fullWidth
                                     id="disciplina"
                                     label="Disciplina"
-                                    name="disciplina"/>
+                                    name="disciplina" />
                             </Grid>
                             <Grid item xs={12}>
                                 <TextField
@@ -186,7 +249,7 @@ export default function EstagioInfo(props) {
                                     fullWidth
                                     id="preceptor"
                                     label="Preceptor"
-                                    name="preceptor"/>
+                                    name="preceptor" />
                             </Grid>
                             <Grid item xs={12}>
                                 <TextField
@@ -195,14 +258,14 @@ export default function EstagioInfo(props) {
                                     fullWidth
                                     id="local"
                                     label="Local"
-                                    name="local"/>
+                                    name="local" />
                             </Grid>
                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                 <Grid item xs={12} sm={6}>
-                                    <Controller 
+                                    <Controller
                                         render={({
                                             field: { onChange, value }
-                                          }) => (
+                                        }) => (
                                             <KeyboardDatePicker
                                                 fullWidth
                                                 disableToolbar
@@ -215,19 +278,19 @@ export default function EstagioInfo(props) {
                                                 onChange={onChange}
                                                 KeyboardButtonProps={{
                                                     'aria-label': 'change date',
-                                                }}/>
+                                                }} />
                                         )}
                                         control={control}
                                         name="dataInicio"
-                                        rules={{required: true}}
+                                        rules={{ required: true }}
                                     />
                                     {errors.dataInicio && <FormHelperText error>Campo Data Inicio é obrigatório!</FormHelperText>}
                                 </Grid>
                                 <Grid item xs={12} sm={6}>
-                                    <Controller 
+                                    <Controller
                                         render={({
                                             field: { onChange, value }
-                                          }) => (
+                                        }) => (
                                             <KeyboardDatePicker
                                                 fullWidth
                                                 disableToolbar
@@ -240,11 +303,11 @@ export default function EstagioInfo(props) {
                                                 onChange={onChange}
                                                 KeyboardButtonProps={{
                                                     'aria-label': 'change date',
-                                                }}/>
+                                                }} />
                                         )}
                                         control={control}
                                         name="dataFim"
-                                        rules={{required: true}}
+                                        rules={{ required: true }}
                                     />
                                     {errors.dataFim && <FormHelperText error>Campo Data Término é obrigatório!</FormHelperText>}
                                 </Grid>
@@ -256,7 +319,7 @@ export default function EstagioInfo(props) {
                                     fullWidth
                                     id="turno"
                                     label="Turno"
-                                    name="turno"/>
+                                    name="turno" />
                             </Grid>
                         </Grid>
                     </DialogContent>
@@ -275,24 +338,24 @@ export default function EstagioInfo(props) {
 
     const _renderModalAddStudent = () => {
         return (
-            <Dialog open={addModal} onClose={closeAddModal} aria-labelledby="form-dialog-title" fullWidth={true}>
+            <Dialog open={addModal.open} onClose={closeAddModal} aria-labelledby="form-dialog-title" fullWidth={true}>
                 <DialogTitle id="form-dialog-title">Adicionar Aluno</DialogTitle>
                 <DialogContent className={styles.autocompleteStudent}>
-                        <AsyncSelect
-                            isClearable 
-                            loadOptions={getOptionsAlunos}                         
-                            onChange={ option => {                                 
-                                    const aluno = {id: option?.value, nome: option?.label};
-                                    setStudent(aluno);
-                                }
-                            }
-                        />
+                    <AsyncSelect
+                        isClearable
+                        loadOptions={getOptionsAlunos}
+                        onChange={option => {
+                            const aluno = { id: option?.value, nome: option?.label };
+                            setStudent(aluno);
+                        }
+                        }
+                    />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={closeAddModal}>
                         Cancelar
                     </Button>
-                    <Button onClick={() => addStudent(student)} variant="contained" color="primary">
+                    <Button onClick={() => addStudent(addModal.currentGrupo, student)} variant="contained" color="primary">
                         Confirmar
                     </Button>
                 </DialogActions>
@@ -302,15 +365,15 @@ export default function EstagioInfo(props) {
 
     const _renderModalDeleteStudent = () => {
         return (
-            <Dialog open={deleteModal} onClose={closeDeleteModal} aria-labelledby="form-dialog-title" fullWidth={true}>
+            <Dialog open={deleteModal.open} onClose={closeDeleteModal} aria-labelledby="form-dialog-title" fullWidth={true}>
                 <DialogTitle id="form-dialog-title">Remover Aluno</DialogTitle>
                 <DialogContent>
-                    {student 
-                    ? 
+                    {student
+                        ?
                         <Typography>
                             {student.id} - {student.name}
                         </Typography>
-                    : 
+                        :
                         <Typography />
                     }
                 </DialogContent>
@@ -318,7 +381,7 @@ export default function EstagioInfo(props) {
                     <Button onClick={closeDeleteModal}>
                         Cancelar
                     </Button>
-                    <Button onClick={() => deleteStudent(student)} variant="contained" color="secondary">
+                    <Button onClick={() => deleteStudent(deleteModal.currentGrupo, student)} variant="contained" color="secondary">
                         Excluir
                     </Button>
                 </DialogActions>
@@ -328,7 +391,7 @@ export default function EstagioInfo(props) {
 
     return (
         <>
-            {_renderSectionHeader()}
+            
             <Grid className={styles.pageContent}>
                 {_renderTopBody()}
                 {_renderContentBody()}
@@ -336,6 +399,15 @@ export default function EstagioInfo(props) {
                 {_renderModalAddStudent()}
                 {_renderModalDeleteStudent()}
             </Grid>
+            <Notification
+                notify={notify}
+                setNotify={setNotify}
+            />
+            <ConfirmDialog
+                confirmDialog={confirmDialog}
+                setConfirmDialog={setConfirmDialog}
+            />
+
         </>
-      );
+    );
 }
