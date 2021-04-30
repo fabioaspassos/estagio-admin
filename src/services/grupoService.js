@@ -12,22 +12,19 @@ const getAlunosOptionValues = async inputValue => {
   }
 
 
-const addAluno = async (idGrupo, aluno) => {
-    await axios.post(`${base_url}/${idGrupo}/aluno`, aluno).then((res) => {
-        return res;
-    }, (err) => {
-        alert('Erro na chamada do servidor!');
-        console.log(err);
-    });
+const addAluno = async (idGrupo, aluno, sucess, error) => {
+    await axios.post(`${base_url}/${idGrupo}/aluno`, aluno)
+    .then(sucess, error);
 }
 
-const removeAluno = async (idGrupo, aluno) => {
-    await axios.delete(`${base_url}/${idGrupo}/aluno/${aluno.id}`).then((res) => {
-        return res;
-    }, (err) => {
-        alert('Erro na chamada do servidor!');
-        console.log(err);
-    });
+const removeAluno = async (idGrupo, aluno, sucess, error) => {
+    await axios.delete(`${base_url}/${idGrupo}/aluno/${aluno.id}`)
+    .then(sucess, error);
 }
 
-export {addAluno, removeAluno, getAlunosOptionValues};
+const copyGrupo = async (grupo, sucess, error) => {
+    await axios.post(`${base_url}/${grupo.id}/duplicate`)
+    .then(sucess, error);
+}
+
+export {addAluno, removeAluno, getAlunosOptionValues, copyGrupo};
