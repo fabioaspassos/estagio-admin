@@ -14,13 +14,14 @@ import {
     DialogActions,
     Button
 } from '@material-ui/core';
-import { useStyles } from './estagio.styles';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import AddIcon from '@material-ui/icons/Add';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import { useStyles } from './estagio.styles';
 import Controls from "../../components/controls/Controls";
 import PageHeader from '../../components/PageHeader';
-import { getAllEscalas, insertEscala } from '../../services/escalaService';
+import { getAllEscalas, insertEscala } from '../../services/escala.service';
+import moment from 'moment';
 
 export default function Estagio() {
     const styles = useStyles();
@@ -35,9 +36,9 @@ export default function Estagio() {
         history.push(`/estagio/${estagio.id}`, { estagio: estagio });
     }
 
-    const insertNewRecord = () => {
-        insertEscala(newRecord);
-        getAllEscalas().then( data => setRecords(data));
+    const insertNewRecord = async () => {
+        await insertEscala(newRecord);
+        await getAllEscalas().then(data => setRecords(data));
         closeModal();
     }
 
@@ -50,7 +51,7 @@ export default function Estagio() {
     }
 
     useEffect(() => {
-        getAllEscalas().then( data => setRecords(data));
+        getAllEscalas().then(data => setRecords(data));
     }, [setRecords]); 
 
     const _renderSectionHeader = () => {
@@ -91,9 +92,10 @@ export default function Estagio() {
                                         </IconButton>
                                     </Typography>
                                     <br />
-                                    {estagio.grupos && estagio.grupos.map((grupo) => (
+                                    {estagio.grupos?.map((grupo) => (
                                         <Typography key={grupo.id}>
-                                            {grupo.disciplina?.descricao} entre {grupo.dataInicio} a {grupo.dataFim} - {grupo.campoEstagio?.nome}
+                                            {grupo.disciplina.descricao} entre {moment(grupo.dataInicio).format("DD/MM/YYYY")} a 
+                                                {' ' + moment(grupo.dataFim).format("DD/MM/YYYY")} - {grupo.campoEstagio.nome}
                                         </Typography>
                                     ))}
                                 </CardContent>

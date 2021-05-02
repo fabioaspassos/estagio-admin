@@ -1,9 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import ViewListIcon from '@material-ui/icons/ViewList';
-import PageHeader from '../../components/PageHeader';
-import { useStyles } from './estagio.styles';
-import PersonAddIcon from '@material-ui/icons/PersonAdd';
-import FileCopyIcon from '@material-ui/icons/FileCopy';
+import AsyncSelect from 'react-select/async';
 import {
     Paper,
     Grid,
@@ -15,44 +11,38 @@ import {
     Dialog,
     DialogTitle,
     DialogContent,
-    TextField,
     DialogActions,
     Button,
-    FormHelperText
 } from '@material-ui/core';
-import {
-    MuiPickersUtilsProvider,
-    KeyboardDatePicker
-} from '@material-ui/pickers';
-import DateFnsUtils from '@date-io/date-fns';
-import { Controller, useForm } from 'react-hook-form';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
-import { getEscalaById } from '../../services/escalaService';
-import { addAluno, removeAluno, getAlunosOptionValues, copyGrupo } from '../../services/grupoService';
-import AsyncSelect from 'react-select/async';
+import EditIcon from '@material-ui/icons/Edit';
+import PersonAddIcon from '@material-ui/icons/PersonAdd';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
 import Notification from "../../components/Notification";
 import ConfirmDialog from "../../components/ConfirmDialog";
+import { useStyles } from './estagio.styles';
+import { getEscalaById } from '../../services/escala.service';
+import { copyGrupo, createGrupo } from '../../services/grupo.service';
+import { addAluno, removeAluno, getAlunosOptionValues } from '../../services/aluno.service';
+import EstagioForm from './estagio.form';
+import moment from 'moment';
 
 const initialModalGrupo = { open: false, currentGrupo: null };
+
 export default function EstagioInfo(props) {
     const styles = useStyles();
     const state = props.location.state;
-    const { register, handleSubmit, reset, control, formState: { errors } } = useForm();
 
     const [estagio, setEstagio] = useState({});
     const [addModal, setAddModal] = useState(initialModalGrupo);
     const [deleteModal, setDeleteModal] = useState(initialModalGrupo);
-    const [formModal, setFormModal] = useState(false);
+    const [formModal, setFormModal] = useState({open: false, title: '', content: null});
     const [student, setStudent] = useState(null);
     const [notify, setNotify] = useState({ isOpen: false, message: '', type: '' })
     const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, title: '', subTitle: '' })
 
-    const openFormModal = () => {
-        setFormModal(true);
-    }
-
     const closeFormModal = () => {
-        setFormModal(false);
+        setFormModal({open: false});
     }
 
     const openAddModal = (grupo) => {
@@ -78,63 +68,106 @@ export default function EstagioInfo(props) {
             ...confirmDialog,
             isOpen: false
         })
-        const res = await copyGrupo(
-            grupo,
-            res => setNotify({
+
+        await copyGrupo(grupo).then(() => {
+            setNotify({
                 isOpen: true,
                 message: 'Grupo copiado.',
                 type: 'success'
-            }),
-            err => setNotify({
+            });
+        }).catch(() => {
+            setNotify({
                 isOpen: true,
                 message: 'Erro ao copiar o grupo',
                 type: 'error'
-            })
-        );
+            });
+        });
+
         getEscalaById(estagio.id).then(data => setEstagio(data));
     }
 
     const deleteStudent = async (grupo, student) => {
         console.log(`>deleteStudent grupo: ${grupo.id} aluno: ${JSON.stringify(student)}`);
-        await removeAluno(
-            grupo.id, student, 
-            res => setNotify({
+
+        await removeAluno(grupo.id, student).then(() => {
+            setNotify({
                 isOpen: true,
                 message: 'Aluno Removido.',
                 type: 'success'
-            }),
-            err => setNotify({
+            });
+        }).catch(() => {
+            setNotify({
                 isOpen: true,
                 message: 'Erro ao remover aluno do grupo',
                 type: 'error'
-            })
-        );
+            });
+        });
+
         closeDeleteModal();
         getEscalaById(estagio.id).then(data => setEstagio(data));
     }
 
     const addStudent = async (grupo, student) => {
         console.log(`Chamada para adicionar grupo:${grupo.id} e aluno: ${JSON.stringify(student)}`);
-        await addAluno(
-            grupo.id, student,
-            res => setNotify({
+
+        await addAluno(grupo.id, student).then(() => {
+            setNotify({
                 isOpen: true,
-                message: 'Aluno Adcionado.',
+                message: 'Aluno Adicionado.',
                 type: 'success'
-            }),
-            err => setNotify({
+            });
+        }).catch(() => {
+            setNotify({
                 isOpen: true,
                 message: 'Erro ao adcionar aluno no grupo',
                 type: 'error'
-            })
-        );
+            });
+        });
+
         closeAddModal();
         getEscalaById(estagio.id).then(data => setEstagio(data));
     }
 
-    const onSubmit = (data) => {
-        console.log(`Chamada para o formulario: ${JSON.stringify(data)}`);
-        reset();
+    const addGrupo = async (data) => {
+        const grupo = {...data, escala: {id: estagio.id}, disciplina: {id: 76}, preceptor: {id: 30}};
+
+        // await createGrupo(grupo).then(() => {
+        //     setNotify({
+        //         isOpen: true,
+        //         message: 'Grupo Adicionado.',
+        //         type: 'success'
+        //     });
+        // }).catch(() => {
+        //     setNotify({
+        //         isOpen: true,
+        //         message: 'Erro ao adicionar novo grupo',
+        //         type: 'error'
+        //     });
+        // });
+
+        // closeFormModal();
+        // getEscalaById(estagio.id).then(data => setEstagio(data));
+    }
+
+    const editGrupo = async (data) => {
+        const grupo = {...data, escala: {id: estagio.id}, disciplina: {id: 76}, preceptor: {id: 30}};
+
+        // await updateGrupo(grupo).then(() => {
+        //     setNotify({
+        //         isOpen: true,
+        //         message: 'Grupo Editado.',
+        //         type: 'success'
+        //     });
+        // }).catch(() => {
+        //     setNotify({
+        //         isOpen: true,
+        //         message: 'Erro ao editar grupo',
+        //         type: 'error'
+        //     });
+        // });
+
+        // closeFormModal();
+        // getEscalaById(estagio.id).then(data => setEstagio(data));
     }
 
     useEffect(() => {
@@ -144,21 +177,11 @@ export default function EstagioInfo(props) {
         })
     }, [state, setEstagio]);
 
-    const getOptionsAlunos = inputValue =>
-        new Promise(resolve => {
-            setTimeout(() => {
-                resolve(getAlunosOptionValues(inputValue));
-            }, 1000);
-        });
-
-    const _renderSectionHeader = () => {
-        return (
-            <PageHeader
-                title='Escala de Estagios'
-                subTitle='Lista dos Grupos de Estagios'
-                icon={<ViewListIcon fontSize='large' />} />
-        );
-    }
+    const getOptionsAlunos = inputValue => new Promise(resolve => {
+        setTimeout(() => {
+            resolve(getAlunosOptionValues(inputValue));
+        }, 1000);
+    });
 
     const _renderTopBody = () => {
         return (
@@ -166,7 +189,7 @@ export default function EstagioInfo(props) {
                 <Paper className={styles.paper}>
                     <Typography variant="h5" key={estagio.id}>
                         Escala: {estagio.nome}
-                        <IconButton onClick={() => openFormModal()} className={styles.detailsButton}>
+                        <IconButton onClick={() => setFormModal({open: true, title: 'Novo Grupo', content: null})} className={styles.detailsButton}>
                             <AddCircleIcon />
                         </IconButton>
                     </Typography>
@@ -178,21 +201,24 @@ export default function EstagioInfo(props) {
     const _renderContentBody = () => {
         return (
             <Grid container spacing={2}>
-                {estagio.grupos && estagio.grupos.map((grupo) => (
+                {estagio.grupos?.map((grupo) => (
                     <Grid item md={6} key={grupo.id}>
                         <Card>
                             <CardContent>
                                 <Typography variant="h6">
                                     {grupo.nome}
+                                    <IconButton onClick={() => setFormModal({open: true, title: 'Editar Grupo', content: grupo})} className={styles.detailsButton}>
+                                            <EditIcon />
+                                        </IconButton>
                                 </Typography>
                                 <Typography>
-                                    {grupo.dataInicio} a {grupo.dataFim}
+                                    {moment(grupo.dataInicio).format('DD/MM/YYYY')} a {moment(grupo.dataFim).format('DD/MM/YYYY')}
                                 </Typography>
                                 <Typography>
                                     {grupo.preceptor.nome} {grupo.campoEstagio.nome}
                                 </Typography>
                                 <hr />
-                                {grupo.alunos && grupo.alunos.map((aluno) => (
+                                {grupo.alunos?.map((aluno) => (
                                     <Typography value={aluno} key={aluno.id}
                                         onClick={() => {
                                             setStudent({ id: aluno.id, name: aluno.nome });
@@ -225,113 +251,11 @@ export default function EstagioInfo(props) {
         );
     }
 
-    // TODO: extract this form as another component
     const _renderModalForm = () => {
         return (
-            <Dialog open={formModal} onClose={closeFormModal} aria-labelledby="form-dialog-title" fullWidth={true}>
-                <DialogTitle id="form-dialog-title">Novo Grupo</DialogTitle>
-                <form onSubmit={handleSubmit(onSubmit)}>
-                    <DialogContent>
-                        <Grid container spacing={2}>
-                            <Grid item xs={12}>
-                                <TextField
-                                    {...register('disciplina')}
-                                    required
-                                    fullWidth
-                                    id="disciplina"
-                                    label="Disciplina"
-                                    name="disciplina" />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    {...register('preceptor')}
-                                    required
-                                    fullWidth
-                                    id="preceptor"
-                                    label="Preceptor"
-                                    name="preceptor" />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    {...register('local')}
-                                    required
-                                    fullWidth
-                                    id="local"
-                                    label="Local"
-                                    name="local" />
-                            </Grid>
-                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                <Grid item xs={12} sm={6}>
-                                    <Controller
-                                        render={({
-                                            field: { onChange, value }
-                                        }) => (
-                                            <KeyboardDatePicker
-                                                fullWidth
-                                                disableToolbar
-                                                variant="inline"
-                                                format="dd/MM/yyyy"
-                                                margin="normal"
-                                                id="dataInicio"
-                                                label="Date Inicio"
-                                                value={value}
-                                                onChange={onChange}
-                                                KeyboardButtonProps={{
-                                                    'aria-label': 'change date',
-                                                }} />
-                                        )}
-                                        control={control}
-                                        name="dataInicio"
-                                        rules={{ required: true }}
-                                    />
-                                    {errors.dataInicio && <FormHelperText error>Campo Data Inicio é obrigatório!</FormHelperText>}
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Controller
-                                        render={({
-                                            field: { onChange, value }
-                                        }) => (
-                                            <KeyboardDatePicker
-                                                fullWidth
-                                                disableToolbar
-                                                variant="inline"
-                                                format="dd/MM/yyyy"
-                                                margin="normal"
-                                                id="dataFim"
-                                                label="Date Término"
-                                                value={value}
-                                                onChange={onChange}
-                                                KeyboardButtonProps={{
-                                                    'aria-label': 'change date',
-                                                }} />
-                                        )}
-                                        control={control}
-                                        name="dataFim"
-                                        rules={{ required: true }}
-                                    />
-                                    {errors.dataFim && <FormHelperText error>Campo Data Término é obrigatório!</FormHelperText>}
-                                </Grid>
-                            </MuiPickersUtilsProvider>
-                            <Grid item xs={12}>
-                                <TextField
-                                    {...register('turno')}
-                                    required
-                                    fullWidth
-                                    id="turno"
-                                    label="Turno"
-                                    name="turno" />
-                            </Grid>
-                        </Grid>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={closeFormModal}>
-                            Cancelar
-                        </Button>
-                        <Button type="submit" variant="contained" color="primary">
-                            Confirmar
-                        </Button>
-                    </DialogActions>
-                </form>
+            <Dialog open={formModal.open} onClose={closeFormModal} aria-labelledby="form-dialog-title" fullWidth={true}>
+                <DialogTitle id="form-dialog-title">{formModal.title}</DialogTitle>
+                <EstagioForm initialValues={formModal.content} handleCloseForm={closeFormModal} handleSubmit={formModal.content ? editGrupo : addGrupo}/>
             </Dialog>
         );
     }
@@ -347,8 +271,7 @@ export default function EstagioInfo(props) {
                         onChange={option => {
                             const aluno = { id: option?.value, nome: option?.label };
                             setStudent(aluno);
-                        }
-                        }
+                        }}
                     />
                 </DialogContent>
                 <DialogActions>
@@ -390,8 +313,7 @@ export default function EstagioInfo(props) {
     }
 
     return (
-        <>
-            
+        <> 
             <Grid className={styles.pageContent}>
                 {_renderTopBody()}
                 {_renderContentBody()}
@@ -407,7 +329,6 @@ export default function EstagioInfo(props) {
                 confirmDialog={confirmDialog}
                 setConfirmDialog={setConfirmDialog}
             />
-
         </>
     );
 }
