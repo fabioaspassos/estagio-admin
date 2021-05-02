@@ -25,7 +25,7 @@ import { getEscalaById } from '../../services/escala.service';
 import { copyGrupo, createGrupo } from '../../services/grupo.service';
 import { addAluno, removeAluno, getAlunosOptionValues } from '../../services/aluno.service';
 import EstagioForm from './estagio.form';
-import moment from 'moment';
+import {convertDateStringFormat} from '../../utils/dateUtils';
 
 const initialModalGrupo = { open: false, currentGrupo: null };
 
@@ -212,7 +212,7 @@ export default function EstagioInfo(props) {
                                         </IconButton>
                                 </Typography>
                                 <Typography>
-                                    {moment(grupo.dataInicio).format('DD/MM/YYYY')} a {moment(grupo.dataFim).format('DD/MM/YYYY')}
+                                    {convertDateStringFormat(grupo.dataInicio, "YYYY-MM-DD", "DD/MM/YYYY")} a {convertDateStringFormat(grupo.dataFim, "YYYY-MM-DD", "DD/MM/YYYY")}
                                 </Typography>
                                 <Typography>
                                     {grupo.preceptor.nome} {grupo.campoEstagio.nome}

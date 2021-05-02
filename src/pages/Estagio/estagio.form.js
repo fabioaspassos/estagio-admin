@@ -13,23 +13,23 @@ import {
     KeyboardDatePicker
 } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
-import moment from 'moment';
+import { ptBR } from "date-fns/locale";
+import { convertDateStringFormat } from '../../utils/dateUtils';
 
 export default function EstagioForm(props) {
 
     const content = props.initialValues;
 
-    // TODO: verificar conversao de datas
-    // const [dateStart, setDateStart] = useState(moment(new Date(content?.dataInicio)).format('DD/MM/YYYY'));
-    // const [dateEnd, setDateEnd] = useState(moment(content?.dataFim).format('DD/MM/YYYY'));
+    const [dateStart, setDateStart] = useState(content?.dataInicio);
+    const [dateEnd, setDateEnd] = useState(content?.dataFim);
 
     const { register, handleSubmit, reset, control, formState: { errors } } = useForm();
 
-    console.table(content);
-
     const onSubmit = async (data) => {
-        props.handleSubmit(data);
-        reset();
+        data.dataInicio = dateStart;
+        console.table(data);
+        // props.handleSubmit(data);
+        // reset();
     }
 
     return (
@@ -66,11 +66,11 @@ export default function EstagioForm(props) {
                             label="Local"
                             name="local" />
                     </Grid>
-                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <MuiPickersUtilsProvider locale={ptBR} utils={DateFnsUtils}>
                         <Grid item xs={12} sm={6}>
                             <Controller
                                 render={({
-                                    field: { onChange, value }
+                                    field: { onChange, value = dateStart }
                                 }) => (
                                     <KeyboardDatePicker
                                         fullWidth
@@ -79,23 +79,23 @@ export default function EstagioForm(props) {
                                         format="dd/MM/yyyy"
                                         margin="normal"
                                         id="dataInicio"
-                                        label="Date Inicio"
-                                        value={value}
-                                        onChange={onChange}
+                                        label="Data Inicio"
+                                        inputValue={convertDateStringFormat(value, "YYYY-MM-DD", "DD/MM/YYYY")}
+                                        maxDate={dateEnd}
+                                        onChange={(e) => { onChange(e); setDateStart(e); }}
                                         KeyboardButtonProps={{
                                             'aria-label': 'change date',
                                         }} />
                                 )}
                                 control={control}
                                 name="dataInicio"
-                                rules={{ required: true }}
                             />
-                            {errors.dataInicio && <FormHelperText error>Campo Data Inicio é obrigatório!</FormHelperText>}
+                            {errors.dataInicio && dateStart && <FormHelperText error>Campo Data Inicio é obrigatório!</FormHelperText>}
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <Controller
                                 render={({
-                                    field: { onChange, value }
+                                    field: { onChange, value = dateEnd}
                                 }) => (
                                     <KeyboardDatePicker
                                         fullWidth
@@ -104,9 +104,10 @@ export default function EstagioForm(props) {
                                         format="dd/MM/yyyy"
                                         margin="normal"
                                         id="dataFim"
-                                        label="Date Término"
-                                        value={value}
-                                        onChange={onChange}
+                                        label="Data Término"
+                                        inputValue={convertDateStringFormat(value, "YYYY-MM-DD", "DD/MM/YYYY")}
+                                        minDate={dateStart}
+                                        onChange={(e) => { onChange(e); setDateEnd(e); }}
                                         KeyboardButtonProps={{
                                             'aria-label': 'change date',
                                         }} />
@@ -115,7 +116,7 @@ export default function EstagioForm(props) {
                                 name="dataFim"
                                 rules={{ required: true }}
                             />
-                            {errors.dataFim && <FormHelperText error>Campo Data Término é obrigatório!</FormHelperText>}
+                            {errors.dataFim && dateEnd && <FormHelperText error>Campo Data Término é obrigatório!</FormHelperText>}
                         </Grid>
                     </MuiPickersUtilsProvider>
                     <Grid item xs={12}>

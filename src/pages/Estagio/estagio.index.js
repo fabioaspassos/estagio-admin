@@ -21,7 +21,7 @@ import { useStyles } from './estagio.styles';
 import Controls from "../../components/controls/Controls";
 import PageHeader from '../../components/PageHeader';
 import { getAllEscalas, insertEscala } from '../../services/escala.service';
-import moment from 'moment';
+import {convertDateStringFormat} from '../../utils/dateUtils';
 
 export default function Estagio() {
     const styles = useStyles();
@@ -94,8 +94,8 @@ export default function Estagio() {
                                     <br />
                                     {estagio.grupos?.map((grupo) => (
                                         <Typography key={grupo.id}>
-                                            {grupo.disciplina.descricao} entre {moment(grupo.dataInicio).format("DD/MM/YYYY")} a 
-                                                {' ' + moment(grupo.dataFim).format("DD/MM/YYYY")} - {grupo.campoEstagio.nome}
+                                            {grupo.disciplina.descricao} entre {convertDateStringFormat(grupo.dataInicio, "YYYY-MM-DD", "DD/MM/YYYY")} a 
+                                                {' ' + convertDateStringFormat(grupo.dataFim, "YYYY-MM-DD", "DD/MM/YYYY")} - {grupo.campoEstagio.nome}
                                         </Typography>
                                     ))}
                                 </CardContent>
