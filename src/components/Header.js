@@ -5,6 +5,8 @@ import ChatBubbleOutlineIcon from '@material-ui/icons/ChatBubbleOutline';
 import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 import SearchIcon from '@material-ui/icons/Search';
 
+import { useAuth } from '../providers/AuthProvider';
+
 const useStyles = makeStyles( theme => ({
     root:{
         backgroundColor: '#fff',
@@ -24,6 +26,13 @@ const useStyles = makeStyles( theme => ({
 
 export default function Header() {
     const classes = useStyles();
+    const { user, setUser } = useAuth();
+
+    const logoff = () => setUser({
+        login: "", 
+        token: "", 
+        signed: false
+    });
 
     return (
         <AppBar position='static' className={classes.root}>
@@ -37,7 +46,7 @@ export default function Header() {
                     </Grid>
                     <Grid item sm/>
                     <Grid item>
-                        <IconButton>
+                        {/* <IconButton>
                             <Badge badgeContent={4} color='secondary'>
                                 <NotificationsNoneIcon fontSize='small' />   
                             </Badge>
@@ -46,8 +55,8 @@ export default function Header() {
                             <Badge badgeContent={3} color='primary'>
                                 <ChatBubbleOutlineIcon fontSize='small' />   
                             </Badge>
-                        </IconButton>
-                        <IconButton>
+                        </IconButton> */}
+                        <IconButton onClick={logoff}>
                             <Badge>
                                 <PowerSettingsNewIcon fontSize='small' />   
                             </Badge>
