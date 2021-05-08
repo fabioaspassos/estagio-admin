@@ -13,10 +13,10 @@ import EscalaInfo from '../pages/Estagio/estagio.info';
 export function Routes() {
   return (
     <Switch>
-      <Route exact path="/"><div></div></Route>
+      <Route exact path="/" isPrivate><div>home</div></Route>
       <Route exact path="/employees" component={Employees} isPrivate />
-      <Route exact path="/estagio" component={Estagio} />
-      <Route exact path="/estagio/:id" render={(props) => <EscalaInfo {...props} />}/>
+      <Route exact path="/estagio" component={Estagio} isPrivate/>
+      <Route exact path="/estagio/:id" render={(props) => <EscalaInfo {...props} />} isPrivate/>
       <Route exact path="/login" component={Login} />
     </Switch>
   );
