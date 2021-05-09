@@ -129,28 +129,32 @@ export default function EstagioInfo(props) {
     }
 
     const addGrupo = async (data) => {
-        const grupo = {...data, escala: {id: estagio.id}, disciplina: {id: 76}, preceptor: {id: 30}};
+        const grupo = {...data, escala: {id: estagio.id}}
+        console.log('AddGrupo');
+        console.table(grupo);
 
-        // await createGrupo(grupo).then(() => {
-        //     setNotify({
-        //         isOpen: true,
-        //         message: 'Grupo Adicionado.',
-        //         type: 'success'
-        //     });
-        // }).catch(() => {
-        //     setNotify({
-        //         isOpen: true,
-        //         message: 'Erro ao adicionar novo grupo',
-        //         type: 'error'
-        //     });
-        // });
+        await createGrupo(grupo).then(() => {
+            setNotify({
+                isOpen: true,
+                message: 'Grupo Adicionado.',
+                type: 'success'
+            });
+        }).catch(() => {
+            setNotify({
+                isOpen: true,
+                message: 'Erro ao adicionar novo grupo',
+                type: 'error'
+            });
+        });
 
-        // closeFormModal();
-        // getEscalaById(estagio.id).then(data => setEstagio(data));
+        closeFormModal();
+        getEscalaById(estagio.id).then(data => setEstagio(data));
     }
 
     const editGrupo = async (data) => {
         const grupo = {...data, escala: {id: estagio.id}, disciplina: {id: 76}, preceptor: {id: 30}};
+        console.log('EditGrupo');
+        console.table(grupo);
 
         // await updateGrupo(grupo).then(() => {
         //     setNotify({

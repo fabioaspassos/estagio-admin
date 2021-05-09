@@ -9,4 +9,8 @@ const convertStringToDate = (string, stringFormat, converTo) => {
     return convertDateStringFormat(string, stringFormat, converTo).toDate();
 }
 
-export {convertDateStringFormat, convertStringToDate};
+const convertDate = (date, format) => {
+    return moment(date).format(format);
+}
+
+export {convertDateStringFormat, convertStringToDate, convertDate};
