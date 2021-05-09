@@ -130,8 +130,6 @@ export default function EstagioInfo(props) {
 
     const addGrupo = async (data) => {
         const grupo = {...data, escala: {id: estagio.id}}
-        console.log('AddGrupo');
-        console.table(grupo);
 
         await createGrupo(grupo).then(() => {
             setNotify({
@@ -152,7 +150,7 @@ export default function EstagioInfo(props) {
     }
 
     const editGrupo = async (data) => {
-        const grupo = {...data, escala: {id: estagio.id}, disciplina: {id: 76}, preceptor: {id: 30}};
+        const grupo = {...data, escala: {id: estagio.id}};
         console.log('EditGrupo');
         console.table(grupo);
 

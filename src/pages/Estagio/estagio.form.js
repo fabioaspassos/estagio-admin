@@ -18,7 +18,7 @@ import {
 } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import { ptBR } from "date-fns/locale";
-import { convertDateStringFormat, convertDate } from '../../utils/dateUtils';
+import { convertDateStringFormat } from '../../utils/dateUtils';
 import { getDisciplinasOptionValues } from '../../services/disciplina.service';
 import { getPreceptorsOptionValues } from '../../services/preceptor.service';
 import { getCamposOptionValues } from '../../services/campo.service';
@@ -30,8 +30,10 @@ export default function EstagioForm(props) {
     const [dateStart, setDateStart] = useState((content) ? content.dataInicio: Date.now());
     const [dateEnd, setDateEnd] = useState((content) ? content.dataFim: Date.now());
 
-    const { register, handleSubmit, setValue, reset, control, formState: { errors } } = useForm({
+    const { register, handleSubmit, setValue, control, formState: { errors } } = useForm({
         defaultValues: {
+            id: content?.id,
+            nome: content?.nome,
             disciplina: content?.disciplina,
             preceptor: content?.preceptor,
             campoEstagio: content?.campoEstagio,
@@ -73,6 +75,8 @@ export default function EstagioForm(props) {
                     <Grid item xs={12}>
                         <TextField 
                             {...register('nome')}
+                            defaultValue={content?.nome}
+                            onChange={(e) => setValue('nome', e.target.value)}
                             fullWidth
                             required
                             label="Nome"
@@ -109,7 +113,7 @@ export default function EstagioForm(props) {
                         <AsyncSelect
                             {...register('campoEstagio')}
                             isClearable
-                            defaultValue={{value: content?.campo.id, label: content?.campo.nome}}
+                            defaultValue={{value: content?.campoEstagio.id, label: content?.campoEstagio.nome}}
                             loadOptions={getOptionsCampos}
                             onChange={option => {
                                 const campo = { id: option?.value, nome: option?.label };
@@ -179,7 +183,7 @@ export default function EstagioForm(props) {
                             onChange={(e) => setValue('turno', e.target.value)}
                             required
                             fullWidth>
-                                <MenuItem selected value={'manha'}>Manhã</MenuItem>
+                                <MenuItem value={'manha'}>Manhã</MenuItem>
                                 <MenuItem value={'tarde'}>Tarde</MenuItem>
                                 <MenuItem value={'noite'}>Noite</MenuItem>
                         </Select>
