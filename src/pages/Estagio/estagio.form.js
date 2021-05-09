@@ -43,8 +43,6 @@ export default function EstagioForm(props) {
         } 
     });
 
-    console.table(content)
-
     const onSubmit = async (data) => {
         data.dataInicio = new Date(dateStart).toISOString();
         data.dataFim = new Date(dateEnd).toISOString();
@@ -81,6 +79,7 @@ export default function EstagioForm(props) {
                             id="nome"
                             name="nome"
                             defaultValue={content?.nome}
+                            onChange={e => setValue('nome', e.target.value)}
                             fullWidth
                             variant="outlined"
                             size="small"

@@ -22,7 +22,7 @@ import Notification from "../../components/Notification";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import { useStyles } from './estagio.styles';
 import { getEscalaById } from '../../services/escala.service';
-import { copyGrupo, createGrupo } from '../../services/grupo.service';
+import { copyGrupo, createGrupo, updateGrupo } from '../../services/grupo.service';
 import { addAluno, removeAluno, getAlunosOptionValues } from '../../services/aluno.service';
 import EstagioForm from './estagio.form';
 import {convertDateStringFormat} from '../../utils/dateUtils';
@@ -151,25 +151,23 @@ export default function EstagioInfo(props) {
 
     const editGrupo = async (data) => {
         const grupo = {...data, escala: {id: estagio.id}};
-        console.log('EditGrupo');
-        console.table(grupo);
 
-        // await updateGrupo(grupo).then(() => {
-        //     setNotify({
-        //         isOpen: true,
-        //         message: 'Grupo Editado.',
-        //         type: 'success'
-        //     });
-        // }).catch(() => {
-        //     setNotify({
-        //         isOpen: true,
-        //         message: 'Erro ao editar grupo',
-        //         type: 'error'
-        //     });
-        // });
+        await updateGrupo(grupo).then(() => {
+            setNotify({
+                isOpen: true,
+                message: 'Grupo Editado.',
+                type: 'success'
+            });
+        }).catch(() => {
+            setNotify({
+                isOpen: true,
+                message: 'Erro ao editar grupo',
+                type: 'error'
+            });
+        });
 
-        // closeFormModal();
-        // getEscalaById(estagio.id).then(data => setEstagio(data));
+        closeFormModal();
+        getEscalaById(estagio.id).then(data => setEstagio(data));
     }
 
     useEffect(() => {
