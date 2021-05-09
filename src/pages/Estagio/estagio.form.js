@@ -43,6 +43,8 @@ export default function EstagioForm(props) {
         } 
     });
 
+    console.table(content)
+
     const onSubmit = async (data) => {
         data.dataInicio = new Date(dateStart).toISOString();
         data.dataFim = new Date(dateEnd).toISOString();
@@ -73,19 +75,22 @@ export default function EstagioForm(props) {
             <DialogContent>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
+                        <InputLabel>Nome</InputLabel>
                         <TextField 
-                            {...register('nome')}
+                            {...register('nome', {required: true, maxLength: 70})}
+                            id="nome"
+                            name="nome"
                             defaultValue={content?.nome}
-                            onChange={(e) => setValue('nome', e.target.value)}
                             fullWidth
-                            required
-                            label="Nome"
+                            variant="outlined"
+                            size="small"
                         />
+                        {errors.nome && <FormHelperText error>Campo Nome é obrigatório!</FormHelperText>}
                     </Grid>
                     <Grid item xs={12}>
                         <InputLabel>Disciplina</InputLabel>
                         <AsyncSelect
-                            {...register('disciplina')}
+                            {...register('disciplina', { required: true })}
                             isClearable
                             defaultValue={{value: content?.disciplina.id, label: content?.disciplina.descricao}}
                             loadOptions={getOptionsDisciplinas}
@@ -94,11 +99,12 @@ export default function EstagioForm(props) {
                                 setValue('disciplina', disciplina);
                             }}
                         />
+                        {errors.disciplina && <FormHelperText error>Campo Disciplina é obrigatório!</FormHelperText>}
                     </Grid>
                     <Grid item xs={12}>
                         <InputLabel>Preceptor</InputLabel>
                         <AsyncSelect
-                            {...register('preceptor')}
+                            {...register('preceptor', { required: true })}
                             isClearable
                             defaultValue={{value: content?.preceptor.id, label: content?.preceptor.nome}}
                             loadOptions={getOptionsPreceptores}
@@ -107,11 +113,12 @@ export default function EstagioForm(props) {
                                 setValue('preceptor', preceptor);
                             }}
                         />
+                        {errors.preceptor && <FormHelperText error>Campo Preceptor é obrigatório!</FormHelperText>}
                     </Grid>
                     <Grid item xs={12}>
                         <InputLabel>Local</InputLabel>
                         <AsyncSelect
-                            {...register('campoEstagio')}
+                            {...register('campoEstagio', { required: true })}
                             isClearable
                             defaultValue={{value: content?.campoEstagio.id, label: content?.campoEstagio.nome}}
                             loadOptions={getOptionsCampos}
@@ -120,6 +127,7 @@ export default function EstagioForm(props) {
                                 setValue('campoEstagio', campo);
                             }}
                         />
+                        {errors.campoEstagio && <FormHelperText error>Campo Local é obrigatório!</FormHelperText>}
                     </Grid>
                     <MuiPickersUtilsProvider locale={ptBR} utils={DateFnsUtils}>
                         <Grid item xs={12} sm={6}>
@@ -176,7 +184,7 @@ export default function EstagioForm(props) {
                     <Grid item xs={12}>
                         <InputLabel>Turno</InputLabel>
                         <Select
-                            {...register('turno')}
+                            {...register('turno', {required: true})}
                             id="turno"
                             label="Turno"
                             defaultValue={content?.turno}
@@ -187,6 +195,7 @@ export default function EstagioForm(props) {
                                 <MenuItem value={'tarde'}>Tarde</MenuItem>
                                 <MenuItem value={'noite'}>Noite</MenuItem>
                         </Select>
+                        {errors.turno && <FormHelperText error>Campo Turno é obrigatório!</FormHelperText>}
                     </Grid>
                 </Grid>
             </DialogContent>
