@@ -33,11 +33,24 @@ export const useStyles = makeStyles(theme => ({
         marginLeft: 'auto'
     },
     paper: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         padding: theme.spacing(2),
         textAlign: 'center',
         color: theme.palette.text.secondary,
       },
     autocompleteStudent: {
         paddingBottom: theme.spacing(20)
-    }
+    },
+    editButton: {
+        padding: theme.spacing(0, 2),
+        float: 'right'
+    },
+    cardLine: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    },
 }));

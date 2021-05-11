@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory } from "react-router-dom";
 import AsyncSelect from 'react-select/async';
 import {
     Paper,
@@ -15,6 +16,7 @@ import {
     Button,
 } from '@material-ui/core';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import EditIcon from '@material-ui/icons/Edit';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
@@ -183,16 +185,26 @@ export default function EstagioInfo(props) {
         }, 1000);
     });
 
+    const BackToEstagio = () => {
+        let history = useHistory();
+        return (
+            <IconButton onClick={() => history.push('/estagio')} className={styles.detailsButton}>
+                <ArrowBackIcon />
+            </IconButton>
+        );
+    }
+
     const _renderTopBody = () => {
         return (
             <Grid className={styles.topTittle}>
                 <Paper className={styles.paper}>
+                    <BackToEstagio/>
                     <Typography variant="h5" key={estagio.id}>
                         Escala: {estagio.nome}
-                        <IconButton onClick={() => setFormModal({open: true, title: 'Novo Grupo', content: null})} className={styles.detailsButton}>
-                            <AddCircleIcon />
-                        </IconButton>
                     </Typography>
+                    <IconButton onClick={() => setFormModal({open: true, title: 'Novo Grupo', content: null})} className={styles.detailsButton}>
+                        <AddCircleIcon />
+                    </IconButton>
                 </Paper>
             </Grid>
         );
@@ -205,18 +217,29 @@ export default function EstagioInfo(props) {
                     <Grid item md={6} key={grupo.id}>
                         <Card>
                             <CardContent>
-                                <Typography variant="h6">
-                                    {grupo.nome}
-                                    <IconButton onClick={() => setFormModal({open: true, title: 'Editar Grupo', content: grupo})} className={styles.detailsButton}>
-                                            <EditIcon />
-                                        </IconButton>
-                                </Typography>
+                                <div className={styles.cardLine}>
+                                    <Typography variant="h6">
+                                        {grupo.disciplina?.descricao}
+                                    </Typography>
+                                    <Typography>
+                                        {grupo.nome}
+                                    </Typography>
+                                    <IconButton onClick={() => setFormModal({open: true, title: 'Editar Grupo', content: grupo})} className={styles.editButton}>
+                                        <EditIcon />
+                                    </IconButton>
+                                </div>
                                 <Typography>
-                                    {convertDateStringFormat(grupo.dataInicio, "YYYY-MM-DD", "DD/MM/YYYY")} a {convertDateStringFormat(grupo.dataFim, "YYYY-MM-DD", "DD/MM/YYYY")}
+                                    {grupo.preceptor?.nome}
                                 </Typography>
-                                <Typography>
-                                    {grupo.preceptor.nome} {grupo.campoEstagio.nome}
-                                </Typography>
+                                <div className={styles.cardLine}>
+                                    <Typography>
+                                        {grupo.campoEstagio?.nome}
+                                    </Typography>
+                                    <Typography>
+                                        {convertDateStringFormat(grupo.dataInicio, "YYYY-MM-DD", "DD/MM/YYYY")} a {convertDateStringFormat(grupo.dataFim, "YYYY-MM-DD", "DD/MM/YYYY")}
+                                    </Typography>
+                                </div>
+
                                 <hr />
                                 {grupo.alunos?.map((aluno) => (
                                     <Typography value={aluno} key={aluno.id}
