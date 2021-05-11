@@ -24,6 +24,9 @@ const SideMenu = (props) => {
                         <Link to="/">Home</Link>
                     </li>
                     <li>
+                        <Link to="/login">Login</Link>
+                    </li>
+                    <li>
                         <Link to="/employees">Employees</Link>
                     </li>
                     <li>

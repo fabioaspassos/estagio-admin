@@ -7,8 +7,8 @@ import SideMenu from '../components/SideMenu'
 import Header from '../components/Header';
 import Employees from '../pages/Employees/Employees';
 import Estagio from '../pages/Estagio/estagio.index';
-import Login from '../pages/Login/Login';
-import EscalaInfo from '../pages/Estagio/estagioInfo';
+import Login from '../pages/Login/login.index';
+import EscalaInfo from '../pages/Estagio/estagio.info';
 
 export function Routes() {
   return (
