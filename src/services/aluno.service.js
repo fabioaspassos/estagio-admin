@@ -16,20 +16,10 @@ const getAlunosOptionValues = async inputValue => {
     });
 }
 
-const addAluno = async (idGrupo, aluno) => {
-    return await axios.post(`${base_url}/${idGrupo}/aluno`, aluno).then((res) => {
-        return res;
-    }, (err) => {
-        return Promise.reject(err);
-    });
-}
+const addAluno = (idGrupo, aluno) => (
+    axios.post(`${base_url}/${idGrupo}/aluno`, aluno));
 
-const removeAluno = async (idGrupo, aluno) => {
-    return await axios.delete(`${base_url}/${idGrupo}/aluno/${aluno.id}`).then((res) => { 
-        return res;
-    }, (err) => {
-        return Promise.reject(err);
-    });
-}
+const removeAluno =  (idGrupo, aluno) => (
+    axios.delete(`${base_url}/${idGrupo}/aluno/${aluno.id}`));
 
 export {addAluno, removeAluno, getAlunosOptionValues}

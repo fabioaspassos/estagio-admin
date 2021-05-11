@@ -3,28 +3,13 @@ import { server } from '../common';
 
 const base_url = `${server}/api/grupo`;
 
-const copyGrupo = async (grupo) => {
-    return await axios.post(`${base_url}/${grupo.id}/duplicate`).then((res) => {
-        return res;
-    }, (err) => {
-        return Promise.reject(err);
-    });
-}
+const copyGrupo = (grupo) => (
+    axios.post(`${base_url}/${grupo.id}/duplicate`));
 
-const createGrupo = async (grupo) => {
-    return await axios.post(`${base_url}`, grupo).then((res) => {
-        return res;
-    }, (err) => {
-        return Promise.reject(err);
-    });
-}
+const createGrupo = (grupo) => (
+    axios.post(`${base_url}`, grupo));
 
-const updateGrupo = async (grupo) => {
-    return await axios.put(`${base_url}`, grupo).then((res) => {
-        return res;
-    }, (err) => {
-        return Promise.reject(err);
-    });
-}
+const updateGrupo = (grupo) => (
+    axios.put(`${base_url}`, grupo));
 
-export {copyGrupo, createGrupo, updateGrupo};
+export { copyGrupo, createGrupo, updateGrupo };
